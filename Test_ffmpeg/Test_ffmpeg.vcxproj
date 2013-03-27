@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{C46930A4-E5B6-43EB-9F19-1BCFBBC66704}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Test_ffmpeg</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../ffmpeg-dev/Include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>../ffmpeg-dev/Lib;C:\msys\1.0\mingw\lib;C:\msys\1.0\mingw\lib\gcc\mingw32\3.4.5</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="ReadMe.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\avcodec.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\avfft.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\dxva2.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\old_codec_ids.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\vaapi.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\vda.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\vdpau.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\version.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavcodec\xvmc.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavdevice\avdevice.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavdevice\version.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\asrc_abuffer.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\avcodec.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\avfilter.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\avfiltergraph.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\buffersink.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavfilter\buffersrc.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavformat\avformat.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavformat\avio.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\adler32.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\aes.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\attributes.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\audioconvert.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\audio_fifo.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\avassert.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\avconfig.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\avstring.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\avutil.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\base64.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\blowfish.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\bprint.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\bswap.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\buffer.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\channel_layout.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\common.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\cpu.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\crc.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\dict.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\error.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\eval.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\fifo.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\file.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\frame.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\hmac.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\imgutils.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\intfloat.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\intfloat_readwrite.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\intreadwrite.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\lfg.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\log.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\lzo.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\mathematics.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\md5.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\mem.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\old_pix_fmts.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\opt.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\parseutils.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\pixdesc.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\pixfmt.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\random_seed.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\rational.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\samplefmt.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\sha.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\time.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\timecode.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\timestamp.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libavutil\xtea.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libpostproc\postprocess.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libswresample\swresample.h" />
+    <ClInclude Include="..\ffmpeg-dev\include\libswscale\swscale.h" />
+    <ClInclude Include="saveFrame.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="targetver.h" />
+    <ClInclude Include="utility.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="saveFrame.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../ffmpeg-dev/Include;D:\PPLive\PPTV\Codec\Test_ffmpeg</AdditionalIncludeDirectories>
+    </ClCompile>
+    <ClCompile Include="Test_ffmpeg.cpp" />
+    <ClCompile Include="utility.cpp" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
