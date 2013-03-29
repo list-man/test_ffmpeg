@@ -2,6 +2,8 @@
 #include "saveFrame.h"
 #include "utility.h"
 
+#define _USE_FRAME_GET_BUFFER_
+
 void SaveFrame(AVFrame* aAvFrame, unsigned int aWidth, unsigned int aHeight, wchar_t* aFileName);
 void DecodePacket(AVFormatContext* aFmtCtx, unsigned int aStreamIndex);
 
@@ -60,12 +62,21 @@ void DecodePacket(AVFormatContext* aFmtCtx, unsigned int aStreamIndex)
 	* the frame and reset it to its original clean state before it
 	* is reused again.
 	*/
-	AVFrame* pFrame = av_frame_alloc();
+	AVFrame* pFrame = av_frame_alloc();//only allocates the AVFrame itself, not the data buffers. Set its fields to default values.
 	AVFrame* pFrameRGB = av_frame_alloc();
 
-	int numBytes = avpicture_get_size(PIX_FMT_RGB24, codecCtx->width, codecCtx->height);
-	uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
-	avpicture_fill((AVPicture*)pFrameRGB, buffer, PIX_FMT_RGB24, codecCtx->width, codecCtx->height);
+#ifdef _USE_FRAME_GET_BUFFER_	//we can use av_frame_free to free the Frame resource.
+	pFrameRGB->format = PIX_FMT_RGB24;
+	pFrameRGB->width = codecCtx->width;
+	pFrameRGB->height = codecCtx->height;
+	av_frame_get_buffer(pFrameRGB, 1);
+
+#else	//we can't use av_frame_free if use this way.otherwise a crash occurs when avcodec_close invoked.
+ 	int numBytes = avpicture_get_size(PIX_FMT_RGB24, codecCtx->width, codecCtx->height);
+ 	uint8_t* buffer = (uint8_t*)av_malloc(numBytes * sizeof(uint8_t));
+ 	avpicture_fill((AVPicture*)pFrameRGB, buffer, PIX_FMT_RGB24, codecCtx->width, codecCtx->height);
+
+#endif
 
 	while (0 == av_read_frame(aFmtCtx, &packet))
 	{
@@ -101,11 +112,11 @@ void DecodePacket(AVFormatContext* aFmtCtx, unsigned int aStreamIndex)
 						when the frame is no longer needed.
 					*/
 					//I guess AVFrame may add reference count when used with AVCodecContext together.
-					//pFrameRGB use memory allocated by av_malloc below to hold the data.
 					//av_frame_unref(pFrameRGB);
 				}
-
-//				av_frame_unref(pFrame);
+				
+				if (codecCtx->refcounted_frames > 0)
+					av_frame_unref(pFrame);
 			}
 		}
 
@@ -113,18 +124,22 @@ void DecodePacket(AVFormatContext* aFmtCtx, unsigned int aStreamIndex)
 		memset(&packet, 0, sizeof(packet));
 	}
 
+	//用av_malloc分配然后用avpicture_fill填充进AVFrame的，不能使用av_frame_free来释放，通过这样的方式分配之后结果
+	//AVFrame中的bug并没有reference count.av_frame_free释放dynamically allocated objects的方式也许并不是av_free,而
+	//AVFrame中的dynamically allocated objects 却是通过av_malloc来获得的。也许该看看源码?
+ #ifdef _USE_FRAME_GET_BUFFER_
+ 	av_frame_free(&pFrameRGB);	//we use av_frame_free instead of avcodec_free_frame because we know how we allocated the memory.
+ #else
 	av_free(buffer);
-	av_free(pFrameRGB);
+	avcodec_free_frame(&pFrameRGB);
+#endif
 
-	av_free(pFrame);
-
-	//av_frame_free: If the frame is reference counted, it will be unreferenced first.
-	//we meat an exception when invoke avcodec_close, why?
-// 	av_frame_free(&pFrameRGB);
-// 	av_frame_free(&pFrame);
-
-	//warning this function does NOT free the data buffers themselves
-//	avcodec_free_frame(&pFrame);
-//	avcodec_free_frame(&pFrameRGB);
+	/*
+	this function does NOT free the data buffers themselves
+	* (it does not know how, since they might have been allocated with
+	*  a custom get_buffer()).
+	Yes, that's what we want.the data buffers were free by av_frame_unref already.
+	*/
+	avcodec_free_frame(&pFrame);
 }
 

@@ -240,6 +240,12 @@
     <ClInclude Include="saveFrame.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="displayFrame.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="playAudio.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -252,6 +258,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="saveFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="displayFrame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="playAudio.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
