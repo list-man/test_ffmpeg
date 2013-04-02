@@ -2,117 +2,54 @@
 #define AV_UTILITY_H
 #endif
 
-#define VIDEO_PICTURE_QUEUE_SIZE	1
+#include "SDL_stdinc.h"
+#include "SDL_audio.h"
+#include "SDL_cdrom.h"
+#include "SDL_cpuinfo.h"
+#include "SDL_endian.h"
+#include "SDL_error.h"
+#include "SDL_events.h"
+#include "SDL_loadso.h"
+#include "SDL_mutex.h"
+#include "SDL_rwops.h"
+#include "SDL_thread.h"
+#include "SDL_timer.h"
+#include "SDL_video.h"
+#include "SDL_version.h"
+#include "SDL_video.h"
+#include "SDL_thread.h"
 
+#define VIDEO_PICTURE_QUEUE_SIZE	125	//25*5
 #define SDL_AUDIO_BUFFER_SIZE	1024
 #define AVCODEC_MAX_AUDIO_FRAME_SIZE	176400
 
 int GetStreamIndexByMediaType(AVFormatContext* aFmtCtx, AVMediaType aMt);
 
-typedef struct tagVideoPictrue
+typedef struct tagVideoPicture
 {
 	SDL_Overlay* overlaybmp;
 	int width, height;
 	int allocated;
-};
+}VideoPicture, *LPVideoPicture;
 
 typedef struct tagPacketQueue {
 	AVPacketList*	first;
 	AVPacketList*	last;
 
-	int	nb_packetSize;
+	int	nb_packets;
 	int size;
 
 	SDL_mutex*	mutex;	//mutex for thread sync.
 	SDL_cond*	cond;	//condition variable.
 }PacketQueue, *LPPacketQueue;
 
-int packet_queue_put(PacketQueue* pktq, AVPacket* packet)
-{
-	if (!pktq || !packet)
-		return -1;
-
-	if (av_dup_packet(packet) < 0)
-		return -1;
-
-	AVPacketList* pktl = av_malloc(sizeof(AVPacketList));
-	if (!pktl)
-	{
-		printf("out of memory to hold AVPacketList!\n");
-		return -1;
-	}
-
-	pktl->next = NULL;
-	pktl->pkt = *packet;
-
-	SDL_LockMutex(pktq->mutex);
-
-	if (!pktq->first){
-		pktq->first = pktl;
-	}
-	else {
-		pktq->last->next = pktl;
-	}
-
-	pktq->nb_packets++;
-	pktq->size += packet->size;
-
-	pktq->last = pktl;
-
-	//signal it before unlock? yes. SDL_ConWait will unlock the mutex, otherwise SDL_ConWait will re-locked
-	SDL_CondSignal(pktq->cond);
-	SDL_UnlockMutex(pktq->mutex);
-
-	return 0;
-}
-
-int packet_queue_get(PacketQueue* pktq, AVPacket* packet, bool blockOrnot)
-{
-	if (!pktq || !packet)
-	{
-		return -1;
-	}
-
-	if (pktq->first)
-	{
-		SDL_LockMutex(pktq->mutex);
-
-		*packet = pktq->first;
-
-		pktq->nb_packets--;
-		pktq->size -= pktq->first->pkt.size;
-
-		pktq->first = pktq->first->next;
-
-		SDL_UnlockMutex(pktq->mutex);
-	}
-	else if (blockOrnot)
-	{
-		SDL_CondWait(pktq->cond, pktq->mutex);
-	}
-	else
-	{
-		return -1;
-	}
-
-	return 0;
-}
-
-void Init_PacketQueue(PacketQueue* pktQ)
-{
-	if (pktQ)
-	{
-		pktQ->first = pktQ->last = NULL;
-		pktQ->nb_packets = pktQ->size = 0;
-
-		pktQ->mutex = SDL_CreateMutex();
-		pktQ->cond = SDL_CreateCond();
-	}
-}
+void Init_PacketQueue(PacketQueue* pktQ);
+int packet_queue_put(PacketQueue* pktq, AVPacket* packet);
+int packet_queue_get(PacketQueue* pktq, AVPacket* packet, bool blockOrnot);
 
 typedef struct tagVideoState
 {
-	AVCodecContext		*codecCtx;
+	AVFormatContext		*fmtCtx;
 	int					videoStream, audioStream;
 	AVStream			*stream_audio;
 	PacketQueue			audio_pktq;
@@ -131,7 +68,7 @@ typedef struct tagVideoState
 	SDL_mutex			*video_pic_mutex;		//mutex for video queue sync.
 	SDL_cond			*video_pic_cond;		//condition variable for video event.
 
-	SDL_Thread			*parse_tid;
+	SDL_Thread			*demux_tid;
 	SDL_Thread			*video_tid;			//video process thread.
 
 	char				filename[1024];	//input file name, this should be a local file or remote file(e.g. file on shared disk or a http stream).

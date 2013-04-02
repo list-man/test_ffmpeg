@@ -26,18 +26,21 @@ int SaveFrame(AVFormatContext* aFmtCtx)
 		DecodePacket(aFmtCtx, stream);
 
 		avcodec_close(aFmtCtx->streams[stream]->codec);
-	}	
+	}
+
+	return 0;
 }
 
 void SaveFrame(AVFrame* aAvFrame, unsigned int aWidth, unsigned int aHeight, wchar_t* aFileName)
 {
-	FILE* fp = _wfopen(aFileName, L"wb");
+	FILE* fp = NULL;
+	_wfopen_s(&fp, aFileName, L"wb");
 
 	// Write header.
 	fprintf(fp, "P6\n%d %d\n255\n", aWidth, aHeight);
 
 	// Write pixel data.
-	for (int i = 0; i < aHeight; i++)
+	for (unsigned int i = 0; i < aHeight; i++)
 	{
 		fwrite(aAvFrame->data[0] + i * aAvFrame->linesize[0], 1, aWidth*3, fp);
 	}
@@ -97,7 +100,7 @@ void DecodePacket(AVFormatContext* aFmtCtx, unsigned int aStreamIndex)
 					if (counter>255 && counter<270)
 					{
 						wchar_t szPath[_MAX_PATH] = {0};
-						swprintf(szPath, L"frame%d.ppm", counter);
+						swprintf(szPath, _MAX_PATH, L"frame%d.ppm", counter);
 						SaveFrame(pFrameRGB, codecCtx->width, codecCtx->height, szPath);
 					}
 

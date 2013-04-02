@@ -246,6 +246,9 @@
     <ClInclude Include="playAudio.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RenderFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -264,6 +267,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="playAudio.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderFile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

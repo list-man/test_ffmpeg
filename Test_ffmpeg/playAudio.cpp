@@ -4,102 +4,7 @@
 #include "SDL.h"
 #include "SDL_thread.h"
 
-class CAVPacketQueue
-{
-public:
-	CAVPacketQueue()
-	{
-		mFirst = mLast = NULL;
-		mNb_packets = mtSize = 0;
-		mMutex = NULL;
-		mCond = NULL;
-	}
-
-	void Init()
-	{
-		mFirst = mLast = NULL;
-		mNb_packets = mtSize = 0;
-
-		mMutex = SDL_CreateMutex();
-		mCond = SDL_CreateCond();
-	}
-
-	int GetPacket(AVPacket* aPacket, bool bBlockOrNot)
-	{
-		int result = 0;
-
-		SDL_LockMutex(mMutex);
-		AVPacketList* pkl = mFirst;
-
-		for (; ;)
-		{
-			if (pkl)
-			{
-				mNb_packets--;
-				mtSize -= pkl->pkt.size;
-				*aPacket = pkl->pkt;
-				mFirst = mFirst->next;
-				av_free(pkl);
-				break;
-			}
-			else if (bBlockOrNot)
-			{
-				SDL_CondWait(mCond, mMutex);
-				//signaled, continue to get available AVPacket.
-			}
-			else
-			{
-				result = -1;
-				break;
-			}
-		}
-
-		SDL_UnlockMutex(mMutex);
-
-		return result;
-	}
-
-	bool AddPacket(AVPacket* aPacket)
-	{
-		if (av_dup_packet(aPacket) < 0)	//why?
-			return false;
-
-		AVPacketList *pkl = (AVPacketList*)av_malloc(sizeof(AVPacketList));
-		if (!pkl) false;
-
-		pkl->pkt = *aPacket;
-		pkl->next = NULL;
-
-		SDL_LockMutex(mMutex);
-
-		if (!mFirst)
-		{
-			mFirst = pkl;
-		}
-		else
-		{
-			mLast->next = pkl;
-		}
-
-		mNb_packets++;
-		mtSize += aPacket->size;
-
-		mLast = pkl;
-
-		SDL_UnlockMutex(mMutex);
-		SDL_CondSignal(mCond);
-
-		return true;
-	}
-protected:
-	AVPacketList* mFirst, *mLast;
-	int mNb_packets;
-	int mtSize;
-	SDL_mutex* mMutex;
-	SDL_cond* mCond;
-};
-
-CAVPacketQueue	g_packets;
+PacketQueue	audioq;
 
 int quit = 0;
 
@@ -129,7 +34,8 @@ int audio_decode_frame(AVCodecContext* aCodecCtx, uint8_t* audio_buf, int buf_si
 				break;
 			}
 
-			memcpy(audio_buf, pkt.data, len1);
+			//memcpy(audio_buf, pkt.data, len1);
+			memcpy(audio_buf, pFrame->data, len1);
 
 			pkt.data += len1;
 			pkt.size -= len1;
@@ -152,10 +58,13 @@ int audio_decode_frame(AVCodecContext* aCodecCtx, uint8_t* audio_buf, int buf_si
 			return -1;
 		}
 
-		if(g_packets.GetPacket(&pkt, 1) < 0) {
+		if (packet_queue_get(&audioq, &pkt, 1) < 0) {
 			return -1;
 		}
 	}
+
+	//avcodec_free_frame(&pFrame);
+	av_frame_free(&pFrame);
 }
 
 void SDLCALL audio_callback(void *userdata, Uint8 *stream, int len)
@@ -206,7 +115,7 @@ int DemuxPacket(AVFormatContext* aFmtCtx, unsigned int aStreamIdx)
 	while (av_read_packet(aFmtCtx, &packet) >= 0)
 	{
 		if (packet.stream_index == aStreamIdx)
-			g_packets.AddPacket(&packet);
+			packet_queue_put(&audioq, &packet);
 		else
 			av_free_packet(&packet);
 
@@ -230,7 +139,7 @@ void RenderAudio(AVFormatContext* aFmtCtx, unsigned int aStreamIndex)
 
 	if (SDL_OpenAudio(&audioSepc, NULL) >= 0)
 	{
-		g_packets.Init();
+		Init_PacketQueue(&audioq);
 		SDL_PauseAudio(0);
 
 		DemuxPacket(aFmtCtx, aStreamIndex);
