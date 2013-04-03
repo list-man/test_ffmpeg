@@ -103,3 +103,8 @@ int packet_queue_get(PacketQueue* pktq, AVPacket* packet, bool blockOrnot)
 
 	return result;
 }
+
+int rint(int x)
+{
+	return (int)(x + (x < 0 ? -0.5 : 0.5));
+};

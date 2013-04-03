@@ -9,6 +9,7 @@
 #include "displayFrame.h"
 #include "playAudio.h"
 #include "RenderFile.h"
+#include "syncVideo.h"
 
 int main(int argc, char* argv[])
 {
@@ -24,7 +25,8 @@ int main(int argc, char* argv[])
 		//SaveFrame(pFormatCtx);
 		//DisplayFrame(pFormatCtx);
 		//PlayAudioStream(pFormatCtx);
-		RenderAVFormatContext(pFormatCtx);
+		//RenderAVFormatContext(pFormatCtx);
+		_Sync::SyncVideo(pFormatCtx);
 	}
 
 	av_close_input_file(pFormatCtx);

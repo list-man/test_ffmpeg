@@ -30,6 +30,7 @@ typedef struct tagVideoPicture
 	SDL_Overlay* overlaybmp;
 	int width, height;
 	int allocated;
+	double pts;
 }VideoPicture, *LPVideoPicture;
 
 typedef struct tagPacketQueue {
@@ -51,12 +52,19 @@ typedef struct tagVideoState
 {
 	AVFormatContext		*fmtCtx;
 	int					videoStream, audioStream;
+
+	double				audio_clock;
 	AVStream			*stream_audio;
 	PacketQueue			audio_pktq;
 	uint8_t				audio_buf[(AVCODEC_MAX_AUDIO_FRAME_SIZE * 3) / 2];
 	unsigned int		audio_buf_size;
 	unsigned int		audio_buf_index;
 	AVPacket			audio_pkt;
+	int					audio_hw_buf_size;
+	double				frame_timer;		//下一个渲染Picture的当前microsecond，用于渲染下一个Frame时候计算下下个Frame的actual_delay
+	double				frame_last_pts;		//最后一个显示的Frame的pts
+	double				frame_last_delay;
+	double				video_clock;
 
 	PacketQueue			video_pktq;
 	AVStream			*stream_video;
@@ -74,3 +82,6 @@ typedef struct tagVideoState
 	char				filename[1024];	//input file name, this should be a local file or remote file(e.g. file on shared disk or a http stream).
 	int					quit;		//signal quit or not.
 }VideoState, *LPVideoState;
+
+// round an integer.
+int rint(int x);
