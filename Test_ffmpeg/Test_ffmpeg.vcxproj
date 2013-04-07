@@ -48,13 +48,17 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../ffmpeg-dev/Include;../SDL-1.2.15-devlib\include</AdditionalIncludeDirectories>
+      <BufferSecurityCheck>false</BufferSecurityCheck>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>../ffmpeg-dev/Lib;C:\msys\1.0\mingw\lib;C:\msys\1.0\mingw\lib\gcc\mingw32\3.4.5;..\SDL-1.2.15-devlib\lib\x86</AdditionalLibraryDirectories>
+      <EntryPointSymbol>
+      </EntryPointSymbol>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -149,6 +153,7 @@
     <ClInclude Include="..\ffmpeg-dev\include\libswscale\swscale.h" />
     <ClInclude Include="displayFrame.h" />
     <ClInclude Include="playAudio.h" />
+    <ClInclude Include="RenderFile.h" />
     <ClInclude Include="saveFrame.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
@@ -157,12 +162,14 @@
   <ItemGroup>
     <ClCompile Include="displayFrame.cpp" />
     <ClCompile Include="playAudio.cpp" />
+    <ClCompile Include="RenderFile.cpp" />
     <ClCompile Include="saveFrame.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <AdditionalIncludeDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">../ffmpeg-dev/Include;D:\PPLive\PPTV\Codec\Test_ffmpeg</AdditionalIncludeDirectories>
     </ClCompile>
+    <ClCompile Include="syncVideo.cpp" />
     <ClCompile Include="Test_ffmpeg.cpp" />
     <ClCompile Include="utility.cpp" />
   </ItemGroup>

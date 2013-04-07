@@ -29,7 +29,9 @@ int main(int argc, char* argv[])
 		_Sync::SyncVideo(pFormatCtx);
 	}
 
-	av_close_input_file(pFormatCtx);
+	avformat_close_input(&pFormatCtx);
+	//encount a crash, the commit imply deprecated use avformat_close_input()
+	//av_close_input_file(pFormatCtx);
 
 	return 0;
 }

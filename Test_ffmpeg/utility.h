@@ -47,20 +47,29 @@ typedef struct tagPacketQueue {
 void Init_PacketQueue(PacketQueue* pktQ);
 int packet_queue_put(PacketQueue* pktq, AVPacket* packet);
 int packet_queue_get(PacketQueue* pktq, AVPacket* packet, bool blockOrnot);
+void packet_queue_flush(PacketQueue* pktq);
+AVPacket* get_flush_pkt();
 
 typedef struct tagVideoState
 {
 	AVFormatContext		*fmtCtx;
-	int					videoStream, audioStream;
+	int					videoStream, audioStream;		// stream index for audio/video.
+	int					av_sync_type;
+	double				external_clock;					//external clock base.
+	int64_t				external_clock_time;
 
 	double				audio_clock;
 	AVStream			*stream_audio;
-	PacketQueue			audio_pktq;
-	uint8_t				audio_buf[(AVCODEC_MAX_AUDIO_FRAME_SIZE * 3) / 2];
-	unsigned int		audio_buf_size;
+	PacketQueue			audio_pktq;						//audio packets queue.
+	uint8_t				audio_buf[(AVCODEC_MAX_AUDIO_FRAME_SIZE * 3) / 2];	//缓存未
+	unsigned int		audio_buf_size;					//audio_buf中未使用数据的大小
 	unsigned int		audio_buf_index;
 	AVPacket			audio_pkt;
 	int					audio_hw_buf_size;
+	double				audio_diff_cum;
+	double				audio_diff_avg_coef;
+	double				audio_diff_threshold;
+	int					audio_diff_avg_count;
 	double				frame_timer;		//下一个渲染Picture的当前microsecond，用于渲染下一个Frame时候计算下下个Frame的actual_delay
 	double				frame_last_pts;		//最后一个显示的Frame的pts
 	double				frame_last_delay;
@@ -72,6 +81,8 @@ typedef struct tagVideoState
 	int					video_pic_size;
 	int					video_pic_rindex;		// read index of video_pics array.
 	int					video_pic_windex;		// write index of video_pics array.
+	double				video_current_pts;
+	int64_t				video_current_pts_time;	//time (av_gettime) at which we updated video_current_pts - used to have running video pts
 
 	SDL_mutex			*video_pic_mutex;		//mutex for video queue sync.
 	SDL_cond			*video_pic_cond;		//condition variable for video event.
@@ -81,7 +92,22 @@ typedef struct tagVideoState
 
 	char				filename[1024];	//input file name, this should be a local file or remote file(e.g. file on shared disk or a http stream).
 	int					quit;		//signal quit or not.
+
+	int					seek_req;
+	int					seek_flags;
+	int64_t				seek_pos;
 }VideoState, *LPVideoState;
+
+enum
+{
+	AV_SYNC_AUDIO_MASTER,
+	AV_SYNC_VIDEO_MASTER,
+	AV_SYNC_EXTERNAL_MASTER,
+};
 
 // round an integer.
 int rint(int x);
+double get_audio_clock(VideoState* vs);
+double get_video_clock(VideoState* vs);
+double get_external_clock(VideoState* vs);
+double get_master_clock(VideoState* vs);

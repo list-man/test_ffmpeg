@@ -24,7 +24,7 @@ Uint32 SDLCALL refresh_callback(Uint32 interval, void *param)
 	msg.user.data1 = param;
 	SDL_PushEvent(&msg);
 
-	return interval;
+	return 0;
 }
 
 void schedule_refresh(VideoState* vs, unsigned int interval)

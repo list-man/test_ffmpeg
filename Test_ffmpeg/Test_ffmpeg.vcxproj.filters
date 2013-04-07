@@ -249,9 +249,6 @@
     <ClInclude Include="RenderFile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="syncVideo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
